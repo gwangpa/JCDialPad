@@ -19,6 +19,7 @@
     
     self.view.buttons = [[JCDialPad defaultButtons] arrayByAddingObjectsFromArray:@[self.twilioButton, self.callButton]];
     self.view.delegate = self;
+    self.view.recipient = @"Press 000 see how it works";
     
     UIImageView* backgroundView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"wallpaper"]];
 	backgroundView.contentMode = UIViewContentModeScaleAspectFill;
@@ -65,6 +66,15 @@
         return NO;
     }
     return YES;
+}
+
+- (void)dialPad:(JCDialPad *)dialPad didChanged:(NSString *)rawText
+{
+    if ([rawText isEqualToString:@"000"] == YES) {
+        dialPad.recipient = @"Daniel KIM";
+    } else {
+        dialPad.recipient = @"";
+    }
 }
 
 - (UIStatusBarStyle)preferredStatusBarStyle

@@ -6,6 +6,7 @@
 @optional
 - (BOOL)dialPad:(JCDialPad *)dialPad shouldInsertText:(NSString *)text forButtonPress:(JCPadButton *)button;
 - (BOOL)dialPad:(JCDialPad *)dialPad shouldInsertText:(NSString *)text forLongButtonPress:(JCPadButton *)button;
+- (void)dialPad:(JCDialPad *)dialPad didChanged:(NSString *)rawText;
 
 @end
 
@@ -23,6 +24,8 @@
 @property (nonatomic, strong) NSArray *buttons;
 @property (nonatomic, strong) UIButton *deleteButton;
 @property (nonatomic, strong) UITextField *digitsTextField;
+
+@property (nonatomic, strong) NSString *recipient;
 
 @property (weak, nonatomic) id<JCDialPadDelegate> delegate;
 

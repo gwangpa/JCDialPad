@@ -15,6 +15,7 @@
 @property (nonatomic, strong) UIView* contentView;
 @property (nonatomic, strong) UIView* backgroundBlurringView;
 @property (nonatomic, strong) NBAsYouTypeFormatter *numFormatter;
+@property (nonatomic, strong) UILabel *recipientLabel;
 
 @end
 
@@ -80,6 +81,13 @@
     self.formatTextToPhoneNumber = YES;
     self.regionCode = @"US";
     self.rawText = @"";
+    
+    self.recipientLabel = [[UILabel alloc] init];
+    self.recipientLabel.textAlignment = NSTextAlignmentCenter;
+    self.recipientLabel.backgroundColor = [UIColor clearColor];
+    self.recipientLabel.font = [UIFont fontWithName:@"HelveticaNeue" size:11.0];
+    self.recipientLabel.textColor = [self.mainColor colorWithAlphaComponent:0.9];
+    self.recipientLabel.alpha = 0.0f;
 }
 
 #pragma mark -
@@ -156,6 +164,18 @@
 	}
 }
 
+- (void)setRecipient:(NSString *)recipient
+{
+    [UIView animateWithDuration:0.2f animations:^{
+        self.recipientLabel.alpha = 0.0f;
+    } completion:^(BOOL finished) {
+        self.recipientLabel.text = recipient;
+        [UIView animateWithDuration:0.2f animations:^{
+            self.recipientLabel.alpha = 1.0f;
+        }];
+    }];
+}
+
 #pragma mark - Helper Methods
 - (void)didTapButton:(UIButton *)sender
 {
@@ -215,13 +235,21 @@
         self.digitsTextField.text = formatted;
         
         [self toggleDeleteButtonVisible:YES animated:YES];
+        
+        if ([self.delegate respondsToSelector:@selector(dialPad:didChanged:)] == YES) {
+            [_delegate dialPad:self didChanged:_rawText];
+        }
     }
 }
 
 - (void)didTapDeleteButton:(UIButton *)sender
 {
-    if (!self.rawText.length)
+    if (!self.rawText.length) {
+        if ([self.delegate respondsToSelector:@selector(dialPad:didChanged:)] == YES) {
+            [_delegate dialPad:self didChanged:_rawText];
+        }
         return;
+    }
     
     _rawText = [self.rawText substringToIndex:self.rawText.length - 1];
     NSString *formatted = self.rawText;
@@ -233,11 +261,17 @@
     if (!self.rawText.length) {
         [self toggleDeleteButtonVisible:NO animated:YES];
     }
+    if ([self.delegate respondsToSelector:@selector(dialPad:didChanged:)] == YES) {
+        [_delegate dialPad:self didChanged:_rawText];
+    }
 }
 
 - (void)didHoldDeleteButton:(UIGestureRecognizer *)holdRec
 {
     self.rawText = @"";
+    if ([self.delegate respondsToSelector:@selector(dialPad:didChanged:)] == YES) {
+        [_delegate dialPad:self didChanged:_rawText];
+    }
 }
 
 #pragma mark - Layout Methods
@@ -266,6 +300,9 @@
     
     self.deleteButton.frame = CGRectMake(self.digitsTextField.right + 2, self.digitsTextField.center.y - 10, top + 28, 20);
     [self.contentView addSubview:self.deleteButton];
+    
+    self.recipientLabel.frame = CGRectMake(self.digitsTextField.x, self.digitsTextField.bottom, self.digitsTextField.width, 10.0f);
+    [self.contentView addSubview:self.recipientLabel];
 }
 
 - (void)layoutButtons
