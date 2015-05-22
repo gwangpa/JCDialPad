@@ -79,7 +79,6 @@
     self.digitsTextField.textColor = [self.mainColor colorWithAlphaComponent:0.9];
     
     self.formatTextToPhoneNumber = YES;
-    self.regionCode = @"US";
     self.rawText = @"";
     
     self.recipientLabel = [[UILabel alloc] init];
